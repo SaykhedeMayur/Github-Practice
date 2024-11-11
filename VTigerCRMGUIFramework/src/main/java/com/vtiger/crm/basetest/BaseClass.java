@@ -12,8 +12,6 @@ import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Optional;
-import org.testng.annotations.Parameters;
 
 import com.vtiger.crm.generic.databaseutility.DataBaseUtility;
 import com.vtiger.crm.generic.fileutility.ExcelUtility;
@@ -25,8 +23,8 @@ import com.vtiger.crm.objectrepositoryutility.HomePage;
 import com.vtiger.crm.objectrepositoryutility.LoginPage;
 
 /**
- * this class is created for Configuration steps. Like connecting to DB, 
- * Lunching and Tearing the browser instance, login and logout etc. 
+ * this class is created for Configuration steps. Like connecting to DB,
+ * Lunching and Tearing the browser instance, login and logout etc.
  * 
  * @author Mayur
  */
@@ -49,17 +47,17 @@ public class BaseClass {
 		dbLib.getDBConnection();
 	}
 
-	@Parameters("BROWSER")
+	// @Parameters("BROWSER")
 	@BeforeClass(groups = { "smokeTest", "regressionTest" })
-	public void configBeforeClass(@Optional("chrome") String browser) throws Throwable {
+	public void configBeforeClass() throws Throwable {
 		System.out.println("==Launch The Browser==");
 
-		/** Getting the data */
-		String BROWSER = browser;
-		
+		// @Optional("chrome") String browser
+		/** Getting the data from testng.xml file */
+		// String BROWSER = browser;
+
 		/** Fetching the data from maven command line */
-		//String BROWSER = System.getProperty("browser");
-		
+		String BROWSER = System.getProperty("browser", fLib.getDataFromPropertiesFile("browser"));
 		/** Launching Browser using RunTime Polymorphism */
 		if (BROWSER.equalsIgnoreCase("chrome")) {
 			driver = new ChromeDriver();
@@ -77,15 +75,19 @@ public class BaseClass {
 		System.out.println("==Login To App==");
 
 		/** Reading the data from Properties File */
-		String URL = fLib.getDataFromPropertiesFile("url");
-		String USERNAME = fLib.getDataFromPropertiesFile("username");
-		String PASSWORD = fLib.getDataFromPropertiesFile("password");
-		
-		/** Fetching the data from maven command line */
-		//String URL = System.getProperty("url");
-		//String USERNAME = System.getProperty("username");
-		//String PASSWORD = System.getProperty("password");
-		
+//		String URL = fLib.getDataFromPropertiesFile("url");
+//		String USERNAME = fLib.getDataFromPropertiesFile("username");
+//		String PASSWORD = fLib.getDataFromPropertiesFile("password");
+
+		/** Fetching the data from maven command line or .properties file */
+		/**
+		 * If we forget to pass data from maven cmd line then below method will fetch
+		 * the data from .properties file
+		 */
+		String URL = System.getProperty("url", fLib.getDataFromPropertiesFile("url"));
+		String USERNAME = System.getProperty("username", fLib.getDataFromPropertiesFile("username"));
+		String PASSWORD = System.getProperty("password", fLib.getDataFromPropertiesFile("password"));
+
 		/** Login From Application */
 		LoginPage lp = new LoginPage(driver);
 		lp.loginToApp(URL, USERNAME, PASSWORD);
